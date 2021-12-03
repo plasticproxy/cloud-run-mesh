@@ -207,10 +207,6 @@ func New() *KRun {
 }
 
 func (kr *KRun) InitForTD() {
-	if len(kr.NetworkName) == 0 {
-		kr.NetworkName = "default"
-	}
-
 	if len(kr.ProjectNumber) == 0 {
 		if projectNumber, err := kr.TdSidecarEnv.fetchProjectNumber(); err != nil {
 			log.Println("Unable to auto-generate project_number: ", err)
@@ -238,8 +234,8 @@ func (kr *KRun) InitForTD() {
 // Traffic Director expects MESH env in the following formats:
 // * td:
 // * td:projects={PROJECT_NUMBER}
-// * td:networks={NETWORK_NAME}
-// * td:projects={PROJECT_NUMBER}&networks={NETWORK_NAME}
+// * td:scopes={SCOPE_NAME}
+// * td:projects={PROJECT_NUMBER}&scopes={SCOPE_NAME}
 
 func (kr *KRun) InitForTDFromMeshEnv() bool {
 	mesh := os.Getenv("MESH")
@@ -257,8 +253,8 @@ func (kr *KRun) InitForTDFromMeshEnv() bool {
 			kr.ProjectNumber = projectNumber
 		}
 
-		if networkName := values.Get("networks"); len(networkName) > 0 {
-			kr.NetworkName = networkName
+		if scope := values.Get("scopes"); len(scope) > 0 {
+			kr.TdSidecarEnv.Scope = scope
 		}
 	}
 	return true
